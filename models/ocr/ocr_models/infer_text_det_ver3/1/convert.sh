@@ -1,0 +1,1 @@
+/usr/src/tensorrt/bin/trtexec  --explicitBatch --onnx=model.onnx --minShapes=x:1x3x50x50 --optShapes=x:4x3x640x640 --maxShapes=x:16x3x640x640 --saveEngine=model.plan  --device=0 --verbose

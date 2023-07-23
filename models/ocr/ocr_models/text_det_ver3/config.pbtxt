@@ -1,0 +1,70 @@
+name: "text_det_ver3"
+platform: "ensemble"
+max_batch_size: 4
+input [
+  {
+    name: "IMAGES"
+    data_type: TYPE_UINT8
+    dims: [3,640,240]
+  }
+]
+output[
+{
+    name: "OUTPUT_DETS"
+    data_type: TYPE_FP32
+    dims: [4,2]
+    
+}
+]
+
+ensemble_scheduling {
+  step [
+    {
+        model_name: "pre_text_det_ver3"
+        model_version: -1
+        input_map {
+        key: "IMAGES"
+        value: "IMAGES"
+      }
+      output_map {
+        key: "INPUT_DETS"
+        value: "INPUT_DETS"
+      }
+      output_map {
+        key: "SHAPE_LISTS"
+        value: "SHAPE_LISTS"
+      }
+    },
+
+    {
+        model_name: "infer_text_det_ver3"
+        model_version: -1
+        input_map {
+          key: "x"
+          value: "INPUT_DETS"
+        }
+        output_map {
+          key: "sigmoid_0.tmp_0"
+          value: "OUTPUT_INFERS"
+        }
+    },
+
+    {
+        model_name: "post_text_det_ver3"
+        model_version: -1
+        input_map {
+          key: "OUTPUT_INFERS"
+          value: "OUTPUT_INFERS"
+        }
+        input_map {
+          key: "SHAPE_LISTS"
+          value: "SHAPE_LISTS"
+        }
+        output_map {
+          key: "OUTPUT_DETS"
+          value: "OUTPUT_DETS"
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,38 @@
+name: "post_text_rec_ver3"
+backend: "python"
+max_batch_size: 4
+
+input [
+{
+    name: "OUTPUT_INFER_RECS"
+    data_type: TYPE_FP32
+    dims: [-1,4401]
+},
+{
+    name: "INDEXS"
+    data_type: TYPE_INT32
+    dims: [1]
+}
+]
+
+output [
+{
+    name: "TEXTS_RECS"
+    data_type: TYPE_INT32
+    dims: [-1,20]
+}
+,
+{
+    name: "SCORES_RECS"
+    data_type: TYPE_FP32
+    dims: [-1]
+}
+,
+{
+    name: "CUSTOM_TEXT_OUTPUT"
+    data_type: TYPE_STRING
+    dims: [-1]
+}
+]
+
+instance_group [{ kind: KIND_CPU }]

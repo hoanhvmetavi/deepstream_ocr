@@ -1,0 +1,32 @@
+name: "pre_text_rec_ver3"
+backend: "python"
+max_batch_size: 4
+input [
+{
+    name: "IMAGES"
+    data_type: TYPE_UINT8
+    dims: [3,640,240]
+},
+{
+    name: "OUTPUT_DETS"
+    data_type: TYPE_FP32
+    dims: [4,2]
+}
+
+]
+ 
+output [
+{
+    name: "INPUT_RECS"
+    data_type: TYPE_FP32
+    dims: [3,48,100]
+},
+{
+    name: "INDEXS"
+    data_type: TYPE_INT32
+    dims: [1]
+}
+
+]
+
+instance_group [{ kind: KIND_CPU }]

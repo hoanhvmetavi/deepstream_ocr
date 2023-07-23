@@ -1,0 +1,70 @@
+name: "ocr_ver3"
+platform: "ensemble"
+max_batch_size: 4
+input [
+{
+    name: "IMAGES"
+    data_type: TYPE_UINT8
+    dims: [3,640,240]
+}
+]
+
+output [
+{
+    name: "TEXTS_RECS"
+    data_type: TYPE_INT32
+    dims: [-1,20]
+},
+{
+    name: "SCORES_RECS"
+    data_type: TYPE_FP32
+    dims: [-1]
+},
+{
+    name: "OUTPUT_DETS"
+    data_type: TYPE_FP32
+    dims: [4,2]
+}
+]
+
+ensemble_scheduling {
+  step [
+    {
+        model_name: "text_det_ver3"
+        model_version: -1
+
+        input_map {
+        key: "IMAGES"
+        value: "IMAGES"
+        }
+
+        output_map {
+        key: "OUTPUT_DETS"
+        value: "OUTPUT_DETS"
+        }
+        
+    },
+
+    {
+        model_name: "text_rec_ver3"
+        model_version: -1
+
+        input_map {
+          key: "IMAGES"
+          value: "IMAGES"
+        }
+        input_map {
+          key: "OUTPUT_DETS"
+          value: "OUTPUT_DETS"
+        }
+        output_map {
+          key: "TEXTS_RECS"
+          value: "TEXTS_RECS"
+        }
+        output_map {
+          key: "SCORES_RECS"
+          value: "SCORES_RECS"
+        }
+    }
+  ]
+}

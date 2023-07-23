@@ -1,0 +1,47 @@
+infer_config {
+  unique_id: 3
+  gpu_ids: [0]
+  max_batch_size: 4
+  backend {
+    inputs [
+      {
+        name: "IMAGES"
+        dims: [3,640,240]
+      }
+    ]
+    triton {
+      model_name: "ocr_ver3"
+      version: 1
+      model_repo {
+        root: "ocr_models"
+        log_level: 1
+        strict_model_config: false
+      }
+    }
+  }
+
+  preprocess {
+    network_format: IMAGE_FORMAT_BGR
+    tensor_order: TENSOR_ORDER_LINEAR
+  }
+  postprocess {
+    classification {
+        custom_parse_classifier_func: "NvDsInferParseCustomOCR"
+    }
+  }
+
+  custom_lib {
+    path: "custom_parser/textocr_det_jp.so"
+  }
+
+  extra {
+    copy_input_to_host_buffers: false
+  }
+}
+input_control {
+  process_mode: PROCESS_MODE_CLIP_OBJECTS
+  interval: 0
+  async_mode: false
+  operate_on_gie_id: -1
+  operate_on_class_ids: [0]
+}

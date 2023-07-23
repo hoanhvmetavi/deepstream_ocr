@@ -1,0 +1,26 @@
+name: "pre_text_det_ver3"
+backend: "python"
+max_batch_size: 16 
+input [
+{
+    name: "IMAGES"
+    data_type: TYPE_UINT8
+    dims: [3,640,240]
+}
+]
+ 
+output [
+{
+    name: "INPUT_DETS"
+    data_type: TYPE_FP32
+    dims: [3,-1,-1]
+},
+{
+    name: "SHAPE_LISTS"
+    data_type: TYPE_FP32
+    dims: [4]
+}
+
+]
+
+instance_group [{ kind: KIND_CPU }]

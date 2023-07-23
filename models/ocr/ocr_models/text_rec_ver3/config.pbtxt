@@ -1,0 +1,100 @@
+name: "text_rec_ver3"
+platform: "ensemble"
+max_batch_size: 4
+input [
+  {
+      name: "IMAGES"
+      data_type: TYPE_UINT8
+      dims: [3,640,240]
+  },
+  {
+      name: "OUTPUT_DETS"
+      data_type: TYPE_FP32
+      dims: [4,2]
+  }
+]
+
+output [
+  {
+      name: "TEXTS_RECS"
+      data_type: TYPE_INT32
+      dims: [-1,20]
+  }
+  ,
+  {
+      name: "SCORES_RECS"
+      data_type: TYPE_FP32
+      dims: [-1]
+  }
+  ,
+  {
+      name: "INDEXS"
+      data_type: TYPE_INT32
+      dims: [1]
+  }
+]
+
+ensemble_scheduling {
+  step [
+    {
+        model_name: "pre_text_rec_ver3"
+        model_version: -1
+
+        input_map {
+        key: "IMAGES"
+        value: "IMAGES"
+        }
+
+        input_map {
+        key: "OUTPUT_DETS"
+        value: "OUTPUT_DETS"
+        }
+
+        output_map {
+          key: "INPUT_RECS"
+          value: "INPUT_RECS"
+        }
+        output_map {
+          key: "INDEXS"
+          value: "INDEXS"
+        }
+        
+    },
+
+    {
+        model_name: "infer_text_rec_ver3"
+        model_version: -1
+
+        input_map {
+          key: "x"
+          value: "INPUT_RECS"
+        }
+
+        output_map {
+          key: "softmax_2.tmp_0"
+          value: "OUTPUT_INFER_RECS"
+        }
+    },
+    {
+        model_name: "post_text_rec_ver3"
+        model_version: -1
+        input_map {
+          key: "OUTPUT_INFER_RECS"
+          value: "OUTPUT_INFER_RECS"
+        }
+        input_map {
+          key: "INDEXS"
+          value: "INDEXS"
+        }
+    
+        output_map {
+          key: "TEXTS_RECS"
+          value: "TEXTS_RECS"
+        }
+        output_map {
+          key: "SCORES_RECS"
+          value: "SCORES_RECS"
+        }
+    }
+  ]
+}
