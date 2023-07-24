@@ -41,19 +41,20 @@ def probe_fn(pad, info, u_data):
     gst_buffer = info.get_buffer()
     batch_meta = pyds.gst_buffer_get_nvds_batch_meta(hash(gst_buffer))
     l_frame = batch_meta.frame_meta_list
-    print(">> PROBE RUNNING")
     while l_frame is not None:
         try:
             frame_meta = pyds.NvDsFrameMeta.cast(l_frame.data)
         except StopIteration:
             break
 
+        display_meta=pyds.nvds_acquire_display_meta_from_pool(batch_meta)
+        pyds.nvds_add_display_meta_to_frame(frame_meta, display_meta)
+        
         l_obj=frame_meta.obj_meta_list
         while l_obj is not None:
             try:
                 # Casting l_obj.data to pyds.NvDsObjectMeta
                 obj_meta=pyds.NvDsObjectMeta.cast(l_obj.data)
-                print(">> obj_meta")
             except StopIteration:
                 break
                 
@@ -73,6 +74,11 @@ def probe_fn(pad, info, u_data):
                 l_obj=l_obj.next
             except StopIteration:
                 break
+
+        try:
+            l_frame=l_frame.next
+        except StopIteration:
+            break
 
     return Gst.PadProbeReturn.OK	
 
@@ -153,7 +159,7 @@ def main():
     # Standard GStreamer initialization
     Gst.init(None)
 
-    sources = ["rtsp://rtspurl"]
+    sources = ["rtsp://meta:Vision!123@192.168.0.22:554/0/profile4/media.smp"]
     number_sources = len(sources)
 
     print("Creating Pipeline \n ")
